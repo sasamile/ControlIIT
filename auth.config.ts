@@ -3,7 +3,7 @@ import Google from "next-auth/providers/google"
 import { NextAuthConfig } from "next-auth"
 import bcrypt from "bcryptjs"
 
-import { LoginFormSchema } from "./schemas/auth"
+import { LoginSchema } from "./schemas/auth"
 import { getUserByEmail } from "./actions/user"
 
 export default {
@@ -21,7 +21,7 @@ export default {
     }),
     Credentials({
       authorize: async (credentials) => {
-        const result = LoginFormSchema.safeParse(credentials)
+        const result = LoginSchema.safeParse(credentials)
 
         if (result.success) {
           const { email, password } = result.data
