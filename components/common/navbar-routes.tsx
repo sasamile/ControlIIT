@@ -16,18 +16,23 @@ export function NavbarRoutes() {
 
   const routes = (routes: NavRoute[]) => {
     return (
-      <div className={cn("max-md:hidden flex-1 flex items-center justify-center gap-3 mx-5")}>
+      <div
+        className={cn(
+          "max-md:hidden flex-1 flex items-center justify-center gap-3 mx-5"
+        )}
+      >
         {routes.map(({ label, href }) => {
           const isActive =
             (pathname === "/" && href === "/") || pathname === href;
 
           return (
             <Link
+              key={href}
               href={href}
               className={cn(
                 "text-primary/70 transition-all hover:text-primary dark:text-primary/70 dark:hover:text-primary",
                 isActive &&
-                  "text-primary hover:text-white hover:bg-main dark:text-primary dark:bg-main dark:hover:bg-main dark:hover:text-white font-semibold"
+                  "text-primary hover:text-primary dark:text-primary dark:bg-main dark:hover:bg-main dark:hover:text-primary font-semibold"
               )}
             >
               {label}
