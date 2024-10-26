@@ -42,7 +42,7 @@ export default async function ManagingRolesPage() {
     <div className="sm:px-4 space-y-8">
       <Heading
         title={`Miembros (${users.length})`}
-        description="Asigna roles a los miembros del sistema"
+        description="Reasigna roles a los miembros del sistema"
       />
       <DataTable searchKey="name" columns={columns} data={formattedUsers} />
     </div>

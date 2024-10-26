@@ -72,7 +72,7 @@ export const columns: ColumnDef<UserColum>[] = [
 
       return (
         <p className="py-4 min-w-[130px] text-muted-foreground text-sm">
-          {phone}
+          {phone ? phone : <span className="italic">No proporcionado aún</span>}
         </p>
       );
     },

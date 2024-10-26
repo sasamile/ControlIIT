@@ -1,5 +1,3 @@
-"use client";
-
 import { LogOut, Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -11,13 +9,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "../ui/scroll-area";
-import { NavRoutes } from "./sidebar-routes";
+import { SidebarRoutes } from "./sidebar-routes";
 import { LogoutButton } from "./logout-button";
-import { useCurrentUser } from "@/hooks/use-current-user";
 import { UserAvatar } from "./user-avatar";
+import { currentUser } from "@/lib/auth-user";
 
-export function MobileSidebar() {
-  const loggedUser = useCurrentUser();
+export async function MobileSidebar() {
+  const loggedUser = await currentUser();
 
   return (
     <div className="md:hidden">
@@ -33,7 +31,7 @@ export function MobileSidebar() {
 
           <aside className="flex flex-col w-full max-h-screen h-full shrink-0 border-r bg-zinc-100/40 dark:bg-zinc-900/10 overflow-hidden">
             <div className="flex items-center space-x-4 truncate px-4 py-5 border-b">
-              <UserAvatar own />
+              <UserAvatar src={loggedUser?.image!} />
               <div className="overflow-x-hidden">
                 <p className="truncate w-full text-[15.5px] font-semibold">
                   {loggedUser?.name}
@@ -46,7 +44,7 @@ export function MobileSidebar() {
 
             <ScrollArea className="h-full pt-3">
               <nav className="flex-1 py-2 overflow-y-auto">
-                <NavRoutes className="mt-1" />
+                <SidebarRoutes role={loggedUser?.role!} className="mt-1" />
               </nav>
             </ScrollArea>
 

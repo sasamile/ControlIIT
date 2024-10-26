@@ -22,7 +22,7 @@ export async function UserButton({ className }: UserButtonProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild className={className}>
         <button className="select-none">
-          <UserAvatar own />
+          <UserAvatar src={loggedUser?.image!} />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

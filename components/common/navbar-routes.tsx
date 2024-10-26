@@ -2,17 +2,20 @@
 
 import { usePathname } from "next/navigation";
 
-import { useCurrentRole } from "@/hooks/use-current-role";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { adminRoutes, userRoutes } from "@/constants";
 import { NavRoute } from "@/types";
+import { UserRole } from "@prisma/client";
 
-export function NavbarRoutes() {
+interface NavbarRoutesProps {
+  role: UserRole;
+}
+
+export function NavbarRoutes({ role }: NavbarRoutesProps) {
   const pathname = usePathname();
-  const userRole = useCurrentRole();
 
-  const isAdmin = userRole === "ADMIN";
+  const isAdmin = role === "ADMIN";
 
   const routes = (routes: NavRoute[]) => {
     return (
