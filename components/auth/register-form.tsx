@@ -4,7 +4,7 @@ import { z } from "zod";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Loader2 } from "lucide-react";
+import { Loader2, Router } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -26,8 +26,11 @@ import { register } from "@/actions/auth";
 import { cn } from "@/lib/utils";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
+import ModalVerified from "./modal-verified";
+import { useRouter } from "next/navigation";
 
 export function RegisterForm() {
+  const router = useRouter();
   const [error, setError] = useState<string | undefined>(undefined);
   const [success, setSuccess] = useState<string | undefined>(undefined);
 
@@ -56,6 +59,10 @@ export function RegisterForm() {
       }
 
       form.reset();
+      toast.success("Verification code sent to your email!", {
+        description: "Please check your inbox and spam folder.",
+      });
+      router.push("/email-verified");
     } catch (error) {
       toast.error("Algo salió mal!");
     }
@@ -165,7 +172,9 @@ export function RegisterForm() {
                 <Button
                   variant="primary"
                   type="submit"
-                  disabled={isSubmitting || !isValid}
+                  disabled={
+                    isSubmitting || !isValid || form.watch("phone").length < 13
+                  }
                   className="w-full font-semibold"
                 >
                   {isSubmitting && (

@@ -1,10 +1,10 @@
-import Credentials from "next-auth/providers/credentials"
-import Google from "next-auth/providers/google"
-import { NextAuthConfig } from "next-auth"
-import bcrypt from "bcryptjs"
+import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
+import { NextAuthConfig } from "next-auth";
+import bcrypt from "bcryptjs";
 
-import { LoginSchema } from "./schemas/auth"
-import { getUserByEmail } from "./actions/user"
+import { LoginSchema } from "./schemas/auth";
+import { getUserByEmail } from "./actions/user";
 
 export default {
   providers: [
@@ -21,24 +21,31 @@ export default {
     }),
     Credentials({
       authorize: async (credentials) => {
-        const result = LoginSchema.safeParse(credentials)
+        const result = LoginSchema.safeParse(credentials);
 
         if (result.success) {
-          const { email, password } = result.data
+          const { email, password } = result.data;
 
-          const user = await getUserByEmail(email)
+          const user = await getUserByEmail(email);
 
           if (!user || !user.password) {
-            return null
+            throw new Error("Credenciales inválidas!");
           }
 
-          const passwordMatch = await bcrypt.compare(password, user.password)
+          const passwordMatch = await bcrypt.compare(password, user.password);
 
-          if (passwordMatch) return user
+          if (!passwordMatch) {
+            throw new Error("Credenciales inválidas");
+          }
+          if (!user.emailVerified) {
+            throw new Error("Usuario no Verificado");
+          }
+
+          if (passwordMatch) return user;
         }
 
-        return null
+        return null;
       },
     }),
   ],
-} satisfies NextAuthConfig
+} satisfies NextAuthConfig;

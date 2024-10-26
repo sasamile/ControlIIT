@@ -1,7 +1,7 @@
 "use client";
 
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -55,6 +55,9 @@ export function LoginForm() {
       const response = await login(values);
 
       setError(response?.error);
+      if (response?.error) {
+        toast.error(response.error);
+      }
 
       if (!response?.error) {
         form.reset();
@@ -119,7 +122,7 @@ export function LoginForm() {
               />
 
               <FormStateMessage type="Success" message={success} />
-              <FormStateMessage type="Error" message={error || urlError} />
+              {/* <FormStateMessage type="Error" message={error || urlError} /> */}
 
               <div className="pt-3 pb-2">
                 <Button

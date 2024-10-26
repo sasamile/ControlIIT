@@ -27,6 +27,8 @@ model User {
   phone         String?
   image         String?
   role          UserRole  @default(USER)
+  otpToken      String? // Guardamos el token temporalmente
+  otpExpires    DateTime? // Fecha de expiración del token
 
   accounts Account[]
 

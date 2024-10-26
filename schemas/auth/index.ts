@@ -36,3 +36,7 @@ export const RegisterSchema = z.object({
     })
     .trim(),
 });
+
+export const otpSchema = z.object({
+  otp: z.string().length(6, 'El código OTP debe tener 6 dígitos'),
+})
