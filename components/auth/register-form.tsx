@@ -59,8 +59,8 @@ export function RegisterForm() {
       }
 
       form.reset();
-      toast.success("Verification code sent to your email!", {
-        description: "Please check your inbox and spam folder.",
+      toast.success("Código de verificación enviado a su correo electrónico.", {
+        description: "Compruebe su bandeja de entrada o de spam.",
       });
       router.push("/email-verified");
     } catch (error) {

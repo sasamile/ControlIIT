@@ -122,7 +122,6 @@ export function LoginForm() {
               />
 
               <FormStateMessage type="Success" message={success} />
-              {/* <FormStateMessage type="Error" message={error || urlError} /> */}
 
               <div className="pt-3 pb-2">
                 <Button
