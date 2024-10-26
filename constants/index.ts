@@ -1,27 +1,30 @@
+import { NavRoute } from "@/types";
+import { LayoutDashboard, Shield, SquareUserRound } from "lucide-react";
+
 export const phoneRegex = /^(\+\d{1,3}[- ]?)?\d{10}$/;
 
-// export const employeeRoutes = [
-//   {
-//     label: "Mensuales",
-//     href: "/dashboard/monthly-clients",
-//     Icon: SquareUserRound,
-//   },
-//   {
-//     label: "Por fracción",
-//     href: "/dashboard/clients-per-fraction",
-//     Icon: UsersRound,
-//   },
-// ]
+export const userRoutes: NavRoute[] = [
+  {
+    label: "Panel",
+    href: "/",
+    Icon: LayoutDashboard,
+  },
+];
 
-// export const adminRoutes = [
-//   {
-//     label: "Empleados",
-//     href: "/dashboard/employees",
-//     Icon: CircleUser,
-//   },
-//   {
-//     label: "Analíticas",
-//     href: "/dashboard/analytics",
-//     Icon: ChartColumnBig,
-//   },
-// ]
+export const adminRoutes: NavRoute[] = [
+  {
+    label: "Panel",
+    href: "/",
+    Icon: LayoutDashboard,
+  },
+  {
+    label: "Asignación de equipos",
+    href: "/equipment-assignment",
+    Icon: SquareUserRound,
+  },
+  {
+    label: "Gestón de roles",
+    href: "/managing-roles",
+    Icon: Shield,
+  },
+];
