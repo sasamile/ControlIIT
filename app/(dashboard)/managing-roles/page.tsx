@@ -44,7 +44,7 @@ export default async function ManagingRolesPage() {
         title={`Miembros (${users.length})`}
         description="Reasigna roles a los miembros del sistema"
       />
-      <DataTable searchKey="name" columns={columns} data={formattedUsers} />
+      <DataTable searchKey="name" searchPlaceholder="Filtra por nombre..." columns={columns} data={formattedUsers} />
     </div>
   );
 }

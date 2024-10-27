@@ -56,3 +56,22 @@ model Account {
 
   @@id([provider, providerAccountId])
 }
+
+model Equipment {
+  id              String    @id @default(cuid())
+  responsibleName String
+  class           String
+  subclass        String
+  element         String
+  reference       String
+  serial          String    @unique
+  brand           String
+  owner           String
+  location        String
+  status          String
+  details         String?
+  availability    String
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
