@@ -34,6 +34,23 @@ export const getUserById = async (id?: string) => {
   }
 };
 
+export async function getUsers(id: string) {
+  try {
+    return await db.user.findMany({
+      where: {
+        id: {
+          not: id,
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  } catch (error) {
+    return [];
+  }
+}
+
 export async function changeRole(userId: string, role: UserRole) {
   if (!userId) {
     return { error: "ID del usuario requerido." };

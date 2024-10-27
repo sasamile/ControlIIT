@@ -11,6 +11,7 @@ interface HeaderProps {
   buttonHref?: string;
   counter?: number;
   showButton?: boolean;
+  buttonLabel?: string;
 }
 
 export function Heading({
@@ -18,6 +19,7 @@ export function Heading({
   description,
   buttonHref,
   showButton = true,
+  buttonLabel,
 }: HeaderProps) {
   const router = useRouter();
 
@@ -30,7 +32,7 @@ export function Heading({
       {showButton && buttonHref && (
         <Button onClick={() => router.push(buttonHref)}>
           <Plus className="size-4 mr-2" />
-          Nueva alerta
+          {buttonLabel}
         </Button>
       )}
     </div>

@@ -30,7 +30,8 @@ model User {
   otpToken      String? // Guardamos el token temporalmente
   otpExpires    DateTime? // Fecha de expiración del token
 
-  accounts Account[]
+  accounts    Account[]
+  assignments Assignment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -57,21 +58,23 @@ model Account {
   @@id([provider, providerAccountId])
 }
 
-model Equipment {
-  id              String    @id @default(cuid())
-  responsibleName String
-  class           String
-  subclass        String
-  element         String
-  reference       String
-  serial          String    @unique
-  brand           String
-  owner           String
-  location        String
-  status          String
-  details         String?
-  availability    String
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+model Assignment {
+  id           String  @id @default(cuid())
+  class        String
+  subclass     String?
+  element      String?
+  reference    String?
+  serial       String?
+  brand        String?
+  owner        String
+  location     String
+  status       String
+  details      String?
+  availability String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

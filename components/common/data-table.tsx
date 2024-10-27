@@ -5,6 +5,7 @@ import {
   flexRender,
   ColumnFiltersState,
   getFilteredRowModel,
+  VisibilityState,
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
@@ -18,13 +19,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import React, { useState } from "react";
+import { cn } from "@/lib/utils";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface DataTableProps<TData, TValue> {
   searchKey: string;
   searchPlaceholder: string;
+  showVisibility?: boolean;
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
@@ -32,10 +42,13 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   searchKey,
   searchPlaceholder,
+  showVisibility = false,
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
 
   const table = useReactTable({
     data,
@@ -44,22 +57,55 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
     state: {
       columnFilters,
+      columnVisibility,
     },
   });
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex max-sm:flex-col-reverse sm:items-center py-4 gap-4">
         <Input
           placeholder={searchPlaceholder}
           value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn(searchKey)?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="sm:max-w-sm"
         />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn("ml-auto h-12", !showVisibility && "hidden")}
+            >
+              Columnas visibles
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="h-[250px]">
+            <ScrollArea className="h-full">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </ScrollArea>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="rounded-md border">
         <Table>
