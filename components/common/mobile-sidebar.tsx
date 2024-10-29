@@ -18,7 +18,7 @@ export async function MobileSidebar() {
   const loggedUser = await currentUser();
 
   return (
-    <div className="md:hidden">
+    <div className="md-plus:hidden">
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="rounded-full">

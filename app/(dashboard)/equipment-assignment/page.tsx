@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { AssignmentDialog } from "./components/assignment-dialog";
 import { DataTable } from "@/components/common/data-table";
 import { AssignmentColum, columns } from "./components/columns";
+import { assignmentStatus } from "@/constants";
 
 export default async function EquipmentAssignmentPage() {
   const userRole = await currentRole();
@@ -24,7 +25,9 @@ export default async function EquipmentAssignmentPage() {
   const formattedAssignments: AssignmentColum[] = equipments.map(
     (assignment) => ({
       id: assignment.id,
-      responsable: assignment.user!,
+      responsibleId: assignment.userId!,
+      imagen: assignment.user.image!,
+      responsable: assignment.user.name!,
       clase: assignment.class,
       subclase: assignment.subclass!,
       elemento: assignment.element!,
@@ -54,6 +57,10 @@ export default async function EquipmentAssignmentPage() {
         showVisibility
         columns={columns}
         data={formattedAssignments}
+        showFilterSelect
+        filterColumnName="estado"
+        filterDefault="Todos"
+        filters={assignmentStatus}
       />
     </div>
   );

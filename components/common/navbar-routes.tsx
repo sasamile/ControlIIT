@@ -21,7 +21,7 @@ export function NavbarRoutes({ role }: NavbarRoutesProps) {
     return (
       <div
         className={cn(
-          "max-md:hidden flex-1 flex items-center justify-center gap-3 mx-5"
+          "max-md-plus:hidden flex-1 flex items-center justify-center gap-3 mx-5"
         )}
       >
         {routes.map(({ label, href }) => {

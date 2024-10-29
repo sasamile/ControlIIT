@@ -4,12 +4,13 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { CellAction } from "./cell-actions";
 import { Badge } from "@/components/ui/badge";
-import { User } from "@prisma/client";
 import { UserAvatar } from "@/components/common/user-avatar";
 
 export type AssignmentColum = {
   id: string;
-  responsable: User;
+  responsibleId: string;
+  imagen: string;
+  responsable: string;
   clase: string;
   subclase: string;
   elemento: string;
@@ -25,15 +26,27 @@ export type AssignmentColum = {
 
 export const columns: ColumnDef<AssignmentColum>[] = [
   {
+    accessorKey: "imagen",
+    header: "Imagen",
+    cell: ({ row }) => {
+      const imagen: string = row.getValue("imagen");
+
+      return (
+        <div className="flex items-center gap-3 py-4 ">
+          <UserAvatar src={imagen} />
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "responsable",
     header: "Responsable",
     cell: ({ row }) => {
-      const responsable: User = row.getValue("responsable");
+      const responsable: string = row.getValue("responsable");
 
       return (
         <div className="flex items-center gap-3 min-w-[200px] py-4 ">
-          <UserAvatar src={responsable.image!} />
-          <p className="text-muted-foreground text-sm">{responsable.name}</p>
+          <p className="text-muted-foreground text-sm">{responsable}</p>
         </div>
       );
     },

@@ -49,7 +49,7 @@ export function AssignmentForm({
   const form = useForm<FormValues>({
     resolver: zodResolver(AssignmentSchema),
     defaultValues: {
-      responsibleId: initialData?.responsable.id || "",
+      responsibleId: initialData?.responsibleId || "",
       class: initialData?.clase || "",
       subclass: initialData?.subclase || "",
       element: initialData?.elemento || "",

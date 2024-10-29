@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
+import { useState, useTransition } from "react";
 import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
-import { User } from "@prisma/client";
 
 import {
   DropdownMenu,
@@ -11,7 +11,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AssignmentColum } from "./columns";
+import { RequestColum } from "./user-columns";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,24 +21,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { getUsers } from "@/actions/user";
-import { AssignmentForm } from "./assignment-form";
 import { AlertModal } from "@/components/common/alert-modal";
-import { toast } from "sonner";
-import { deleteAssignment } from "@/actions/assignment";
+import { RequestForm } from "./request-form";
+import { deleteRequest } from "@/actions/requests";
 
 interface CellActionProps {
-  assignmentData: AssignmentColum;
+  requestData: RequestColum;
 }
 
-export function CellAction({ assignmentData }: CellActionProps) {
-  const loggedUser = useCurrentUser();
-
+export function CellAction({ requestData }: CellActionProps) {
   const [isLoading, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [openAlertConfirmation, setOpenAlertConfirmation] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
@@ -51,7 +45,7 @@ export function CellAction({ assignmentData }: CellActionProps) {
   const handleConfirm = () => {
     startTransition(async () => {
       try {
-        const { error, success } = await deleteAssignment(assignmentData.id);
+        const { error, success } = await deleteRequest(requestData.id);
 
         if (error) {
           toast.error("Algo salió mal.", {
@@ -67,17 +61,13 @@ export function CellAction({ assignmentData }: CellActionProps) {
         }
       } catch {
         toast.error("Error", {
-          description: "Algo salió mal en el proceso.",
+          description: "Algo salió mal al eliminar el cartel publicitario.",
         });
       } finally {
         setOpen(false);
       }
     });
   };
-
-  useEffect(() => {
-    getUsers().then((result) => setUsers(result));
-  }, []);
 
   return (
     <>
@@ -92,16 +82,12 @@ export function CellAction({ assignmentData }: CellActionProps) {
         <DialogContent className="sm:max-w-[480px] h-[80%] p-0">
           <ScrollArea>
             <DialogHeader className="p-6">
-              <DialogTitle>Editar Asignación</DialogTitle>
+              <DialogTitle>Editar Solicitud</DialogTitle>
               <DialogDescription>
                 Edita los campos que necesites.
               </DialogDescription>
             </DialogHeader>
-            <AssignmentForm
-              initialData={assignmentData}
-              users={users}
-              closeDialog={closeDialog}
-            />
+            <RequestForm initialData={requestData} closeModal={closeDialog} />
           </ScrollArea>
         </DialogContent>
       </Dialog>

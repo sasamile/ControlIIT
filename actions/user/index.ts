@@ -34,14 +34,9 @@ export const getUserById = async (id?: string) => {
   }
 };
 
-export async function getUsers(id: string) {
+export async function getUsers() {
   try {
     return await db.user.findMany({
-      where: {
-        id: {
-          not: id,
-        },
-      },
       orderBy: {
         createdAt: "desc",
       },

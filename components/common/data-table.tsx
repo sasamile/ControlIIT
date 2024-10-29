@@ -30,11 +30,22 @@ import { Input } from "@/components/ui/input";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "../ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface DataTableProps<TData, TValue> {
   searchKey: string;
   searchPlaceholder: string;
   showVisibility?: boolean;
+  showFilterSelect?: boolean;
+  filterColumnName?: string;
+  filterDefault?: string;
+  filters?: string[];
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
@@ -43,6 +54,10 @@ export function DataTable<TData, TValue>({
   searchKey,
   searchPlaceholder,
   showVisibility = false,
+  showFilterSelect = false,
+  filterColumnName,
+  filterDefault,
+  filters,
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -66,46 +81,71 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex max-sm:flex-col-reverse sm:items-center py-4 gap-4">
+      <div className="flex max-md:flex-col-reverse md:items-center items-end md:justify-between py-4 gap-4">
         <Input
           placeholder={searchPlaceholder}
           value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn(searchKey)?.setFilterValue(event.target.value)
           }
-          className="sm:max-w-sm"
+          className="md:max-w-sm"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn("ml-auto h-12", !showVisibility && "hidden")}
+        <div className="flex md:items-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn("ml-auto h-12", !showVisibility && "hidden")}
+              >
+                Columnas
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="h-[250px]">
+              <ScrollArea className="h-full">
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </ScrollArea>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Select
+            value={
+              (table
+                .getColumn(filterColumnName!)
+                ?.getFilterValue() as string) ?? filterDefault!
+            }
+            onValueChange={(value) =>
+              table
+                .getColumn(filterColumnName!)
+                ?.setFilterValue(value === filterDefault! ? "" : value)
+            }
+          >
+            <SelectTrigger
+              className={cn("ml-4 w-[180px]", !showFilterSelect && "hidden")}
             >
-              Columnas visibles
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="h-[250px]">
-            <ScrollArea className="h-full">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </ScrollArea>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <SelectValue placeholder={`Filtrar por ${filterColumnName}`} />
+            </SelectTrigger>
+            <SelectContent>
+              {filters?.map((item) => (
+                <SelectItem value={item}>{item}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>

@@ -1,5 +1,10 @@
 import { NavRoute } from "@/types";
-import { LayoutDashboard, Shield, SquareUserRound } from "lucide-react";
+import {
+  Headset,
+  LayoutDashboard,
+  Shield,
+  SquareUserRound,
+} from "lucide-react";
 
 export const phoneRegex = /^(\+\d{1,3}[- ]?)?\d{10}$/;
 
@@ -8,6 +13,11 @@ export const userRoutes: NavRoute[] = [
     label: "Panel",
     href: "/",
     Icon: LayoutDashboard,
+  },
+  {
+    label: "Portal de solicitudes",
+    href: "/request-center",
+    Icon: Headset,
   },
 ];
 
@@ -21,6 +31,11 @@ export const adminRoutes: NavRoute[] = [
     label: "Asignación de equipos",
     href: "/equipment-assignment",
     Icon: SquareUserRound,
+  },
+  {
+    label: "Centro de solicitudes",
+    href: "/request-center",
+    Icon: Headset,
   },
   {
     label: "Gestón de roles",
@@ -80,3 +95,14 @@ export const locations = [
   "3er Piso desarrollo",
 ];
 export const statuses = ["Bueno", "Malo", "Para reclamación"];
+
+export const requestTypes = [
+  "Cambio de Equipo",
+  "Actualización de Hardware/Software",
+  "Reparación",
+  "Cambio de Ubicación",
+  "Otro",
+];
+
+export const assignmentStatus = ["Bueno", "Malo", "Para reclamación", "Todos"];
+export const requestStatus = ["Pendiente", "Aprobado", "Rechazado", "Todos"];

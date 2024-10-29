@@ -13,14 +13,14 @@ export async function Navbar() {
   return (
     <div className="flex items-center justify-between h-[80px] border-b sm:px-8 px-4">
       <div className="flex items-center gap-6">
-        <Link href="/" className="">
+        <Link href="/">
           <Logo />
         </Link>
         <NavbarRoutes role={loggedUser?.role!} />
       </div>
       <div className="flex items-center gap-3">
         <ModeToggle className="size-10 border rounded-full" />
-        <UserButton className="max-md:hidden" />
+        <UserButton className="max-md-plus:hidden" />
         <MobileSidebar />
       </div>
     </div>

@@ -1,7 +1,6 @@
 "use client";
 
-import { User } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,13 +11,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { AssignmentForm } from "./assignment-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getUsers } from "@/actions/user";
+import { RequestForm } from "./request-form";
 
-export function AssignmentDialog() {
+export function RequestDialog() {
   const [open, setOpen] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
@@ -28,24 +25,23 @@ export function AssignmentDialog() {
     setOpen(false);
   };
 
-  useEffect(() => {
-    getUsers().then((result) => setUsers(result));
-  }, []);
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="primary">Nueva Asignación</Button>
+        <Button variant="primary" className="max-md:w-full">
+          Nueva solicitud de cambio
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[480px] h-[80%] p-0">
+      <DialogContent className="max-xl:max-h-[500px] xl:max-h-[560px] h-full p-0">
         <ScrollArea>
-          <DialogHeader className="p-6">
-            <DialogTitle>Crear Nueva Asignación</DialogTitle>
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle>Nueva Solicitud de Cambio</DialogTitle>
             <DialogDescription>
-              Ingresa los detalles de la nueva asignación de equipo aquí.
+              Completa el formulario para solicitar un cambio en tu equipo o
+              realizar otras peticiones.
             </DialogDescription>
           </DialogHeader>
-          <AssignmentForm users={users} closeDialog={closeDialog} />
+          <RequestForm closeModal={closeDialog} />
         </ScrollArea>
       </DialogContent>
     </Dialog>
