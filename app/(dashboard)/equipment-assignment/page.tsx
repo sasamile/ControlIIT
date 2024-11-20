@@ -29,6 +29,7 @@ export default async function EquipmentAssignmentPage() {
       elementId: assignment.inventoryId,
       responsibleId: assignment.userId!,
       imagen: assignment.user.image!,
+      elementImage: assignment?.image!,
       responsable: assignment.user.name!,
       elemento: assignment.inventory.element!,
       clase: assignment.inventory.class,

@@ -11,6 +11,7 @@ export type AssignmentColum = {
   elementId: string;
   responsibleId: string;
   imagen: string;
+  elementImage: string,
   responsable: string;
   clase: string;
   subclase: string;
@@ -53,6 +54,19 @@ export const columns: ColumnDef<AssignmentColum>[] = [
       );
     },
   },
+  // {
+  //   accessorKey: "elementImage",
+  //   header: "Imagen del equipo",
+  //   cell: ({ row }) => {
+  //     const image: string = row.getValue("elementImage");
+
+  //     return (
+  //       <div className="flex items-center gap-3 py-4 ">
+  //         {/* TODO: Renderizar el Image del equipo */}
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     accessorKey: "clase",
     header: "Clase",

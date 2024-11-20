@@ -161,6 +161,7 @@ export async function updateAssignment(
         status,
         details: observations,
         availability,
+        quantity,
         user: {
           connect: {
             id: responsibleId,

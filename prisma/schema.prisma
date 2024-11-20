@@ -91,7 +91,8 @@ model Assignment {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  quantity     Int @default(1)
+  image        String?
+  quantity     Int     @default(1)
   reference    String?
   serial       String?
   location     String
