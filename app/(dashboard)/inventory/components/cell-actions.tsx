@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
-import { Inventory, User } from "@prisma/client";
+import { User } from "@prisma/client";
 
 import {
   DropdownMenu,
@@ -11,7 +11,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AssignmentColum } from "./columns";
+import { InventoryElementColum } from "./columns";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,26 +21,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { getUsers } from "@/actions/user";
-import { AssignmentForm } from "./assignment-form";
+import { InventoryForm } from "./inventory-form";
 import { AlertModal } from "@/components/common/alert-modal";
 import { toast } from "sonner";
-import { deleteAssignment } from "@/actions/assignment";
-import { getInventoryElements } from "@/actions/inventory";
+import { deleteInventoryElement } from "@/actions/inventory";
 
 interface CellActionProps {
-  assignmentData: AssignmentColum;
+  inventoryElementData: InventoryElementColum;
 }
 
-export function CellAction({ assignmentData }: CellActionProps) {
-  const loggedUser = useCurrentUser();
-
+export function CellAction({ inventoryElementData }: CellActionProps) {
   const [isLoading, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [openAlertConfirmation, setOpenAlertConfirmation] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
-  const [elements, setElements] = useState<Inventory[]>([]);
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
@@ -53,7 +46,9 @@ export function CellAction({ assignmentData }: CellActionProps) {
   const handleConfirm = () => {
     startTransition(async () => {
       try {
-        const { error, success } = await deleteAssignment(assignmentData.id, assignmentData.elementId);
+        const { error, success } = await deleteInventoryElement(
+          inventoryElementData.id
+        );
 
         if (error) {
           toast.error("Algo salió mal.", {
@@ -77,11 +72,6 @@ export function CellAction({ assignmentData }: CellActionProps) {
     });
   };
 
-  useEffect(() => {
-    getUsers().then((result) => setUsers(result));
-    getInventoryElements().then((result) => setElements(result));
-  }, []);
-
   return (
     <>
       <AlertModal
@@ -95,15 +85,13 @@ export function CellAction({ assignmentData }: CellActionProps) {
         <DialogContent className="sm:max-w-[480px] h-[80%] p-0">
           <ScrollArea>
             <DialogHeader className="p-6">
-              <DialogTitle>Editar Asignación</DialogTitle>
+              <DialogTitle>Editar Elemento</DialogTitle>
               <DialogDescription>
                 Edita los campos que necesites.
               </DialogDescription>
             </DialogHeader>
-            <AssignmentForm
-              elements={elements}
-              initialData={assignmentData}
-              users={users}
+            <InventoryForm
+              initialData={inventoryElementData}
               closeDialog={closeDialog}
             />
           </ScrollArea>

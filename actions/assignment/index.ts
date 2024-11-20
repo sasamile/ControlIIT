@@ -23,41 +23,66 @@ export async function createAssignment(
   try {
     const {
       responsibleId,
-      class: assignmentClass,
-      subclass,
-      element,
       reference,
       serial,
-      brand,
       owner,
       location,
       status,
       observations,
       availability,
+      quantity,
+      elementId,
     } = result.data;
 
-    await db.assignment.create({
+    // Verificar si hay suficiente cantidad disponible en el inventario
+    const inventoryItem = await db.inventory.findUnique({
+      where: { id: elementId },
+    });
+
+    if (!inventoryItem) {
+      return { error: "Elemento de inventario no encontrado." };
+    }
+
+    if (inventoryItem.availableQuantity < quantity) {
+      return { error: "Cantidad insuficiente en el inventario." };
+    }
+
+    const response = await db.assignment.create({
       data: {
-        class: assignmentClass,
-        subclass,
-        element,
         reference,
         serial,
-        brand,
         owner,
         location,
         status,
         details: observations,
         availability,
+        quantity,
         user: {
           connect: {
             id: responsibleId,
           },
         },
+        inventory: {
+          connect: {
+            id: elementId,
+          },
+        },
       },
     });
 
+    if (response.id) {
+      await db.inventory.update({
+        where: { id: elementId },
+        data: {
+          availableQuantity: {
+            decrement: quantity,
+          },
+        },
+      });
+    }
+
     revalidatePath("/equipment-assignment");
+    revalidatePath("/inventory");
     return { success: "Asignación creada." };
   } catch (error) {
     return { error: "Algo salió mal en el proceso." };
@@ -85,13 +110,11 @@ export async function updateAssignment(
 
   try {
     const {
+      quantity,
+      elementId,
       responsibleId,
-      class: assignmentClass,
-      subclass,
-      element,
       reference,
       serial,
-      brand,
       owner,
       location,
       status,
@@ -99,17 +122,40 @@ export async function updateAssignment(
       availability,
     } = result.data;
 
-    await db.assignment.update({
+    const existingAssignment = await db.assignment.findUnique({
+      where: { id: assignmentId },
+    });
+
+    if (!existingAssignment) {
+      return { error: "Asignación no encontrada." };
+    }
+
+    // Obtener el elemento de inventario relacionado
+    const inventoryItem = await db.inventory.findUnique({
+      where: { id: elementId },
+    });
+
+    if (!inventoryItem) {
+      return { error: "Elemento de inventario no encontrado." };
+    }
+
+    // Verificar la cantidad disponible y calcular el ajuste necesario
+    const currentAssignedQuantity = existingAssignment.quantity;
+    const difference = quantity - currentAssignedQuantity;
+
+    if (difference > 0 && inventoryItem.availableQuantity < difference) {
+      return {
+        error: `No se puede asignar esa cantidad. Quedan ${inventoryItem.availableQuantity} equipos disponibles.`,
+      };
+    }
+
+    const response = await db.assignment.update({
       where: {
         id: assignmentId,
       },
       data: {
-        class: assignmentClass,
-        subclass,
-        element,
         reference,
         serial,
-        brand,
         owner,
         location,
         status,
@@ -120,8 +166,25 @@ export async function updateAssignment(
             id: responsibleId,
           },
         },
+        inventory: {
+          connect: {
+            id: elementId,
+          },
+        },
       },
     });
+
+    if (response.id) {
+      // Actualizar el inventario según la diferencia
+      await db.inventory.update({
+        where: { id: elementId },
+        data: {
+          availableQuantity: {
+            increment: -difference, // Resta si se asignan más, suma si se reducen
+          },
+        },
+      });
+    }
 
     revalidatePath("/equipment-assignment");
     return { success: "Asignación actualizada." };
@@ -130,7 +193,7 @@ export async function updateAssignment(
   }
 }
 
-export async function deleteAssignment(id: string) {
+export async function deleteAssignment(id: string, elementId: string) {
   const loggedUser = await currentUser();
 
   if (loggedUser?.role !== "ADMIN") {
@@ -140,12 +203,29 @@ export async function deleteAssignment(id: string) {
   if (!id) {
     return { error: "ID de la asignación requerido." };
   }
+
+  if (!elementId) {
+    return { error: "ID del elemento requerido." };
+  }
+
   try {
-    await db.assignment.delete({
+    const result = await db.assignment.delete({
       where: { id },
     });
 
+    if (result.id) {
+      await db.inventory.update({
+        where: { id: elementId },
+        data: {
+          availableQuantity: {
+            increment: result.quantity,
+          },
+        },
+      });
+    }
+
     revalidatePath("/equipment-assignment");
+    revalidatePath("/inventory");
     return { success: "Asignación eliminada." };
   } catch (error) {
     return { error: "Algo salió mal en el proceso." };

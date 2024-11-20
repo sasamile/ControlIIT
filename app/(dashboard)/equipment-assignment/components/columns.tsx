@@ -8,6 +8,7 @@ import { UserAvatar } from "@/components/common/user-avatar";
 
 export type AssignmentColum = {
   id: string;
+  elementId: string;
   responsibleId: string;
   imagen: string;
   responsable: string;
@@ -22,6 +23,7 @@ export type AssignmentColum = {
   estado: string;
   observaciones: string;
   disponibilidad: string;
+  cantidad: number;
 };
 
 export const columns: ColumnDef<AssignmentColum>[] = [
@@ -152,6 +154,19 @@ export const columns: ColumnDef<AssignmentColum>[] = [
             </span>
           )}
         </p>
+      );
+    },
+  },
+  {
+    accessorKey: "cantidad",
+    header: "Cantidad asignada",
+    cell: ({ row }) => {
+      const cantidad: number = row.getValue("cantidad");
+
+      return (
+        <div className="min-w-[130px] pl-4">
+          <Badge className="rounded-full size-8 items-center justify-center bg-muted-foreground/20 text-muted-foreground hover:bg-muted-foreground/20 hover:text-muted-foreground">{cantidad}</Badge>
+        </div>
       );
     },
   },

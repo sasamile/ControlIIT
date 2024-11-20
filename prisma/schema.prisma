@@ -65,26 +65,65 @@ model Account {
   @@id([provider, providerAccountId])
 }
 
+model Inventory {
+  id                String  @id @default(cuid())
+  element           String
+  class             String
+  subclass          String?
+  brand             String?
+  totalQuantity     Int     @default(0)
+  availableQuantity Int
+
+  assignments Assignment[] // Relación con las asignaciones
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([element, brand])
+}
+
 model Assignment {
-  id           String  @id @default(cuid())
-  class        String
-  subclass     String?
-  element      String?
-  reference    String?
-  serial       String?
-  brand        String?
-  owner        String
-  location     String
-  status       String
-  details      String?
-  availability String?
+  id String @id @default(cuid())
+
+  inventoryId String
+  inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  quantity     Int @default(1)
+  reference    String?
+  serial       String?
+  location     String
+  owner        String
+  status       String
+  availability String?
+  details      String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// model Assignment {
+//   id           String  @id @default(cuid())
+//   class        String
+//   subclass     String?
+//   element      String?
+//   reference    String?
+//   serial       String?
+//   brand        String?
+//   owner        String
+//   location     String
+//   status       String
+//   details      String?
+//   availability String?
+
+//   userId String
+//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
 
 model Request {
   id          String        @id @default(cuid())

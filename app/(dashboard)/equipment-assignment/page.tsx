@@ -19,26 +19,29 @@ export default async function EquipmentAssignmentPage() {
   const equipments = await db.assignment.findMany({
     include: {
       user: true,
+      inventory: true,
     },
   });
 
   const formattedAssignments: AssignmentColum[] = equipments.map(
     (assignment) => ({
       id: assignment.id,
+      elementId: assignment.inventoryId,
       responsibleId: assignment.userId!,
       imagen: assignment.user.image!,
       responsable: assignment.user.name!,
-      clase: assignment.class,
-      subclase: assignment.subclass!,
-      elemento: assignment.element!,
+      elemento: assignment.inventory.element!,
+      clase: assignment.inventory.class,
+      subclase: assignment.inventory.subclass!,
       referencia: assignment.reference!,
       serial: assignment.serial!,
-      marca: assignment.brand!,
+      marca: assignment.inventory.brand!,
       propietario: assignment.owner!,
       ubicación: assignment.location!,
       estado: assignment.status!,
       observaciones: assignment.details!,
       disponibilidad: assignment.availability!,
+      cantidad: assignment.quantity,
     })
   );
 

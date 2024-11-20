@@ -1,6 +1,6 @@
 "use client";
 
-import { Inventory, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -12,15 +12,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { AssignmentForm } from "./assignment-form";
+import { InventoryForm } from "./inventory-form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getUsers } from "@/actions/user";
-import { getInventoryElements } from "@/actions/inventory";
+// import { getUsers } from "@/actions/user";
 
-export function AssignmentDialog() {
+export function InventoryDialog() {
   const [open, setOpen] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
-  const [elements, setElements] = useState<Inventory[]>([]);
+  // const [users, setUsers] = useState<User[]>([]);
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
@@ -30,29 +28,24 @@ export function AssignmentDialog() {
     setOpen(false);
   };
 
-  useEffect(() => {
-    getUsers().then((result) => setUsers(result));
-    getInventoryElements().then((result) => setElements(result));
-  }, []);
+  // useEffect(() => {
+  //   getUsers().then((result) => setUsers(result));
+  // }, []);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="primary">Nueva Asignación</Button>
+        <Button variant="primary">Nuevo equipo</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[480px] h-[80%] p-0">
         <ScrollArea>
           <DialogHeader className="p-6">
-            <DialogTitle>Crear Nueva Asignación</DialogTitle>
+            <DialogTitle>Crear Nuevo Equipo</DialogTitle>
             <DialogDescription>
-              Ingresa los detalles de la nueva asignación de equipo aquí.
+              Ingresa los detalles del nuevo elemento.
             </DialogDescription>
           </DialogHeader>
-          <AssignmentForm
-            users={users}
-            elements={elements}
-            closeDialog={closeDialog}
-          />
+          <InventoryForm closeDialog={closeDialog} />
         </ScrollArea>
       </DialogContent>
     </Dialog>

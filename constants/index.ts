@@ -2,6 +2,7 @@ import { NavRoute } from "@/types";
 import {
   Headset,
   LayoutDashboard,
+  Package,
   Shield,
   SquareUserRound,
 } from "lucide-react";
@@ -26,6 +27,11 @@ export const adminRoutes: NavRoute[] = [
     label: "Panel",
     href: "/",
     Icon: LayoutDashboard,
+  },
+  {
+    label: "Inventario",
+    href: "/inventory",
+    Icon: Package,
   },
   {
     label: "Asignación de equipos",
@@ -94,6 +100,7 @@ export const locations = [
   "2do Piso hall",
   "3er Piso desarrollo",
 ];
+
 export const statuses = ["Bueno", "Malo", "Para reclamación"];
 
 export const requestTypes = [

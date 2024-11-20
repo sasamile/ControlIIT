@@ -26,7 +26,7 @@ import {
 import { toast } from "sonner";
 import { AssignmentSchema } from "@/schemas/assignment";
 import { classes, locations, statuses, subclasses } from "@/constants";
-import { User } from "@prisma/client";
+import { Inventory, User } from "@prisma/client";
 import { UserAvatar } from "@/components/common/user-avatar";
 import { createAssignment, updateAssignment } from "@/actions/assignment";
 import { AssignmentColum } from "./columns";
@@ -37,11 +37,13 @@ interface AssignmentFormProps {
   initialData?: AssignmentColum;
   closeDialog: () => void;
   users: User[];
+  elements: Inventory[];
 }
 
 export function AssignmentForm({
   initialData,
   users,
+  elements,
   closeDialog,
 }: AssignmentFormProps) {
   const [isLoading, startTransition] = useTransition();
@@ -50,17 +52,15 @@ export function AssignmentForm({
     resolver: zodResolver(AssignmentSchema),
     defaultValues: {
       responsibleId: initialData?.responsibleId || "",
-      class: initialData?.clase || "",
-      subclass: initialData?.subclase || "",
-      element: initialData?.elemento || "",
+      elementId: initialData?.elementId || "",
       reference: initialData?.referencia || "",
       serial: initialData?.serial || "",
-      brand: initialData?.marca || "",
       owner: initialData?.propietario || "",
       location: initialData?.ubicación || "",
       status: initialData?.estado || "",
       observations: initialData?.observaciones || "",
       availability: initialData?.disponibilidad || "",
+      quantity: initialData?.cantidad || 1,
     },
   });
 
@@ -167,22 +167,31 @@ export function AssignmentForm({
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
-          name="class"
+          name="elementId"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Clase *</FormLabel>
+            <FormItem className="flex-1">
+              <FormLabel>Cantidad</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar clase" />
+                    <SelectValue placeholder="Seleccionar elemento" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
-                  {classes.map((c) => (
-                    <SelectItem key={c} value={c}>
-                      {c}
+                <SelectContent className="max-h-[250px]">
+                  {elements.map((element) => (
+                    <SelectItem
+                      disabled={element.availableQuantity === 0}
+                      key={element.id}
+                      value={element.id}
+                    >
+                      <div className="flex items-center gap-3">
+                        <p>
+                          {element.element} {`(${element.brand})`}
+                        </p>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -193,41 +202,27 @@ export function AssignmentForm({
         />
         <FormField
           control={form.control}
-          name="subclass"
+          name="quantity"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Subclase</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar subclase" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent className="h-[250px]">
-                  {subclasses.map((sc) => (
-                    <SelectItem key={sc} value={sc}>
-                      {sc}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="element"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Elemento</FormLabel>
+              <FormLabel>Cantidad Total</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input
+                  type="number"
+                  min={1}
+                  {...field}
+                  value={field.value === 0 ? "" : field.value} // Mostrar vacío si es 0
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    field.onChange(value === "" ? 0 : Number(value)); // Manejar vacío
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="reference"
@@ -247,19 +242,6 @@ export function AssignmentForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Serial</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="brand"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Marca</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
