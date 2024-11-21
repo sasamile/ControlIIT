@@ -11,7 +11,7 @@ export async function Navbar() {
 
   return (
     <div className="flex items-center justify-between h-[80px] border-b sm:px-8 px-4">
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-2">
         <Link href="/">
           <LogoTheme />
         </Link>

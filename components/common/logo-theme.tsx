@@ -15,11 +15,7 @@ function LogoTheme() {
     return theme === "dark" ? "/Logo1.png" : "/logo2.png";
   };
 
-  return (
-    <div>
-      <Image src={getImageSource()} width={100} height={50} alt="logo" />
-    </div>
-  );
+  return <Image src={getImageSource()} width={160} height={50} alt="logo" />;
 }
 
 export default LogoTheme;

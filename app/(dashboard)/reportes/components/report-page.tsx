@@ -168,7 +168,7 @@ export default function ReportPage({ inventory }: ReportPageProps) {
 
   return (
     <Button
-      className="w-auto"
+      className="w-auto "
       onClick={handleGenerateReport}
       disabled={isLoading || inventory.length === 0}
     >

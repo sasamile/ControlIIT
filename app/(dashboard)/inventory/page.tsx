@@ -44,7 +44,7 @@ export default async function Inventory() {
           title={`Inventario de equipos`}
           description="Administra y controla la disponibilidad de equipos de forma eficiente."
         />
-        <div className="w-fit space-x-3">
+        <div className="w-fit space-x-3 flex justify-center items-center">
           <ReportPage inventory={inventory} />
           <InventoryDialog />
         </div>
