@@ -1,10 +1,10 @@
 "use client";
 
-import { useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Loader2 } from "lucide-react";
+import { FileIcon, Loader2, XIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +30,8 @@ import { Inventory, User } from "@prisma/client";
 import { UserAvatar } from "@/components/common/user-avatar";
 import { createAssignment, updateAssignment } from "@/actions/assignment";
 import { AssignmentColum } from "./columns";
+import { Label } from "@/components/ui/label";
+import { uploadFile } from "@/actions/uploadthing/uploadthing-actions";
 
 type FormValues = z.infer<typeof AssignmentSchema>;
 
@@ -47,6 +49,16 @@ export function AssignmentForm({
   closeDialog,
 }: AssignmentFormProps) {
   const [isLoading, startTransition] = useTransition();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showExistingImage, setShowExistingImage] = useState(true);
+
+  useEffect(() => {
+    if (initialData?.elementImage && showExistingImage) {
+      setPreviewUrl(initialData.elementImage);
+    }
+  }, [initialData, showExistingImage]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(AssignmentSchema),
@@ -68,10 +80,29 @@ export function AssignmentForm({
 
   const handleSubmit = async (values: FormValues) => {
     try {
+      let imageUrl = null;
+
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+
+        const response = await uploadFile(formData);
+
+        if (!response?.success) {
+          toast.error("Error al subir la imagen");
+          return;
+        }
+
+        imageUrl = response.fileUrl;
+      } else if (initialData?.elementImage && showExistingImage) {
+        // Mantener la imagen existente si no se selecciona una nueva
+        imageUrl = initialData.elementImage;
+      }
+
       if (!initialData) {
-        createAssignmentFunction(values);
+        createAssignmentFunction(values, imageUrl ?? "");
       } else {
-        updateAssignmentFunction(initialData.id, values);
+        updateAssignmentFunction(initialData.id, values, imageUrl ?? "");
       }
     } catch (error) {
       toast.error("Error", {
@@ -80,10 +111,10 @@ export function AssignmentForm({
     }
   };
 
-  const createAssignmentFunction = (values: FormValues) => {
+  const createAssignmentFunction = (values: FormValues, imageUrl: string) => {
     startTransition(async () => {
       try {
-        const { error, success } = await createAssignment(values);
+        const { error, success } = await createAssignment(values, imageUrl);
 
         if (error) {
           toast.error("Algo salió mal", {
@@ -108,11 +139,16 @@ export function AssignmentForm({
 
   const updateAssignmentFunction = (
     assignmentId: string,
-    values: FormValues
+    values: FormValues,
+    imageUrl: string
   ) => {
     startTransition(async () => {
       try {
-        const { error, success } = await updateAssignment(assignmentId, values);
+        const { error, success } = await updateAssignment(
+          assignmentId,
+          values,
+          imageUrl
+        );
 
         if (error) {
           toast.error("Algo salió mal", {
@@ -132,6 +168,32 @@ export function AssignmentForm({
         });
       }
     });
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
+      setSelectedFile(file);
+      const fileUrl = URL.createObjectURL(file);
+      setPreviewUrl(fileUrl);
+    } else {
+      alert("Por favor, selecciona una imagen PNG o JPEG válida.");
+      setSelectedFile(null);
+      setPreviewUrl(null);
+    }
+  };
+
+  const handleButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setShowExistingImage(false); // Añadir esta línea
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -167,13 +229,12 @@ export function AssignmentForm({
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="elementId"
           render={({ field }) => (
             <FormItem className="flex-1">
-              <FormLabel>Cantidad</FormLabel>
+              <FormLabel>Elemento</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -200,6 +261,56 @@ export function AssignmentForm({
             </FormItem>
           )}
         />
+        <div className="w-full mx-auto space-y-2">
+          <Label className="text-muted-foreground font-medium">
+            Imagen del equipo o elemento
+          </Label>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleButtonClick}
+              className="flex items-center gap-2 w-full"
+            >
+              <FileIcon className="size-4" />
+              <span>Subir imagen</span>
+            </Button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/png,image/jpeg"
+              hidden
+            />
+            {(selectedFile ||
+              (initialData?.elementImage && showExistingImage)) && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleRemoveFile}
+                className="h-8 w-8 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-500"
+              >
+                <XIcon className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+          {selectedFile && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <FileIcon className="size-4" />
+              {selectedFile.name}
+            </div>
+          )}
+          {previewUrl && (
+            <div className="relative h-[200px] w-full rounded-lg overflow-hidden border">
+              <img
+                src={previewUrl}
+                alt="Preview"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+        </div>
         <FormField
           control={form.control}
           name="quantity"
@@ -222,7 +333,6 @@ export function AssignmentForm({
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="reference"

@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
 import { DataTable } from "@/components/common/data-table";
-import { requestStatus } from "@/constants";
+import { requestStatus, requestTypes } from "@/constants";
 import { AdminRequestColum, adminColumns } from "./admin-columns";
 import { getAllRequest } from "@/actions/requests";
 
@@ -27,9 +27,9 @@ export async function AdminTable() {
       columns={adminColumns}
       data={formattedRequests}
       showFilterSelect
-      filterColumnName="status"
+      filterColumnName="requestType"
       filterDefault="Todos"
-      filters={requestStatus}
+      filters={[...requestTypes, "Todos"]}
     />
   );
 }

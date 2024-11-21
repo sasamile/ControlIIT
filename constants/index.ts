@@ -24,11 +24,6 @@ export const userRoutes: NavRoute[] = [
 
 export const adminRoutes: NavRoute[] = [
   {
-    label: "Panel",
-    href: "/",
-    Icon: LayoutDashboard,
-  },
-  {
     label: "Inventario",
     href: "/inventory",
     Icon: Package,
@@ -48,6 +43,7 @@ export const adminRoutes: NavRoute[] = [
     href: "/managing-roles",
     Icon: Shield,
   },
+ 
 ];
 
 export const classes = [

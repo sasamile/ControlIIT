@@ -1,11 +1,10 @@
 import Link from "next/link";
-
-import { Logo } from "./logo";
 import { ModeToggle } from "./mode-toggle";
 import { UserButton } from "./user-button";
 import { MobileSidebar } from "./mobile-sidebar";
 import { NavbarRoutes } from "./navbar-routes";
 import { currentUser } from "@/lib/auth-user";
+import LogoTheme from "./logo-theme";
 
 export async function Navbar() {
   const loggedUser = await currentUser();
@@ -14,7 +13,7 @@ export async function Navbar() {
     <div className="flex items-center justify-between h-[80px] border-b sm:px-8 px-4">
       <div className="flex items-center gap-6">
         <Link href="/">
-          <Logo />
+          <LogoTheme />
         </Link>
         <NavbarRoutes role={loggedUser?.role!} />
       </div>

@@ -5,13 +5,14 @@ import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-actions";
 import { Badge } from "@/components/ui/badge";
 import { UserAvatar } from "@/components/common/user-avatar";
+import Image from "next/image";
 
 export type AssignmentColum = {
   id: string;
   elementId: string;
   responsibleId: string;
   imagen: string;
-  elementImage: string,
+  elementImage: string;
   responsable: string;
   clase: string;
   subclase: string;
@@ -54,19 +55,34 @@ export const columns: ColumnDef<AssignmentColum>[] = [
       );
     },
   },
-  // {
-  //   accessorKey: "elementImage",
-  //   header: "Imagen del equipo",
-  //   cell: ({ row }) => {
-  //     const image: string = row.getValue("elementImage");
+  {
+    accessorKey: "elementImage",
+    header: "Imagen ",
+    cell: ({ row }) => {
+      const image: string = row.getValue("elementImage");
 
-  //     return (
-  //       <div className="flex items-center gap-3 py-4 ">
-  //         {/* TODO: Renderizar el Image del equipo */}
-  //       </div>
-  //     );
-  //   },
-  // },
+      return (
+        <div className="flex items-center gap-3 py-4">
+          {image ? (
+            <div className="relative w-[100px] h-[50px]">
+              <Image
+                src={image}
+                fill
+                className="object-contain rounded-2xl"
+                alt="imagen del equipo"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = "/fallback-image.png";
+                }}
+              />
+            </div>
+          ) : (
+            <span className="text-muted-foreground italic">Sin imagen</span>
+          )}
+        </div>
+      );
+    },
+  },
   {
     accessorKey: "clase",
     header: "Clase",
@@ -179,7 +195,9 @@ export const columns: ColumnDef<AssignmentColum>[] = [
 
       return (
         <div className="min-w-[130px] pl-4">
-          <Badge className="rounded-full size-8 items-center justify-center bg-muted-foreground/20 text-muted-foreground hover:bg-muted-foreground/20 hover:text-muted-foreground">{cantidad}</Badge>
+          <Badge className="rounded-full size-8 items-center justify-center bg-muted-foreground/20 text-muted-foreground hover:bg-muted-foreground/20 hover:text-muted-foreground">
+            {cantidad}
+          </Badge>
         </div>
       );
     },

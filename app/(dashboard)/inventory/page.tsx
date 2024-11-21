@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import { InventoryDialog } from "./components/inventory-dialog";
 import { db } from "@/lib/db";
 import { columns, InventoryElementColum } from "./components/columns";
+import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
 
 export default async function Inventory() {
   const userRole = await currentRole();
@@ -28,6 +30,13 @@ export default async function Inventory() {
     })
   );
 
+  const ReportPage = dynamic(
+    () => import("../reportes/components/report-page"),
+    {
+      ssr: false, // Important: disable server-side rendering for this component
+    }
+  );
+
   return (
     <div className="sm:px-4 space-y-8">
       <div className="flex max-md:flex-col md:items-center justify-between md:gap-3 gap-5">
@@ -35,8 +44,12 @@ export default async function Inventory() {
           title={`Inventario de equipos`}
           description="Administra y controla la disponibilidad de equipos de forma eficiente."
         />
-        <InventoryDialog />
+        <div className="w-fit space-x-3">
+          <ReportPage inventory={inventory} />
+          <InventoryDialog />
+        </div>
       </div>
+
       <DataTable
         searchKey="elemento"
         searchPlaceholder="Filtra por nombre del elemento..."

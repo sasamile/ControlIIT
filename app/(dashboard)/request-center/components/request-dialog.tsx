@@ -35,7 +35,7 @@ export function RequestDialog() {
       <DialogContent className="max-xl:max-h-[500px] xl:max-h-[560px] h-full p-0">
         <ScrollArea>
           <DialogHeader className="px-6 pt-6">
-            <DialogTitle>Nueva Solicitud de Cambio</DialogTitle>
+            <DialogTitle>Nueva solicitud de cambio</DialogTitle>
             <DialogDescription>
               Completa el formulario para solicitar un cambio en tu equipo o
               realizar otras peticiones.

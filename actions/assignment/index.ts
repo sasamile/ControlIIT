@@ -1,13 +1,15 @@
 "use server";
 
 import { currentUser } from "@/lib/auth-user";
+import { AssignatEmail } from "@/lib/brevo";
 import { db } from "@/lib/db";
 import { AssignmentSchema } from "@/schemas/assignment";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export async function createAssignment(
-  values: z.infer<typeof AssignmentSchema>
+  values: z.infer<typeof AssignmentSchema>,
+  imageUrl: string
 ) {
   const loggedUser = await currentUser();
   const result = AssignmentSchema.safeParse(values);
@@ -52,6 +54,7 @@ export async function createAssignment(
         reference,
         serial,
         owner,
+        image: imageUrl,
         location,
         status,
         details: observations,
@@ -69,6 +72,12 @@ export async function createAssignment(
         },
       },
     });
+
+    const user = await db.user.findFirst({
+      where: { id: responsibleId },
+    });
+
+    AssignatEmail(user?.email ?? "", user?.name ?? "");
 
     if (response.id) {
       await db.inventory.update({
@@ -91,7 +100,8 @@ export async function createAssignment(
 
 export async function updateAssignment(
   assignmentId: string,
-  values: z.infer<typeof AssignmentSchema>
+  values: z.infer<typeof AssignmentSchema>,
+  imageUrl: string
 ) {
   const loggedUser = await currentUser();
   const result = AssignmentSchema.safeParse(values);
@@ -157,6 +167,7 @@ export async function updateAssignment(
         reference,
         serial,
         owner,
+        image: imageUrl,
         location,
         status,
         details: observations,
@@ -228,6 +239,44 @@ export async function deleteAssignment(id: string, elementId: string) {
     revalidatePath("/equipment-assignment");
     revalidatePath("/inventory");
     return { success: "Asignación eliminada." };
+  } catch (error) {
+    return { error: "Algo salió mal en el proceso." };
+  }
+}
+
+// mostrar quien tiene cada equipo
+
+export async function getAssignment() {
+  const loggedUser = await currentUser();
+
+  if (!loggedUser) {
+    return { error: "No hay usuario logueado." };
+  }
+
+  try {
+    const result = await db.assignment.findMany({
+      where: {
+        user: {
+          id: loggedUser.id,
+        },
+      },
+      include: {
+        inventory: {
+          select: {
+            element: true,
+            brand: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    revalidatePath("/");
+    return result;
   } catch (error) {
     return { error: "Algo salió mal en el proceso." };
   }

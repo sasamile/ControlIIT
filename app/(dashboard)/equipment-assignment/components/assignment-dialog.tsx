@@ -38,12 +38,12 @@ export function AssignmentDialog() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="primary">Nueva Asignación</Button>
+        <Button variant="primary">Nueva asignación</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[480px] h-[80%] p-0">
         <ScrollArea>
           <DialogHeader className="p-6">
-            <DialogTitle>Crear Nueva Asignación</DialogTitle>
+            <DialogTitle>Crear nueva asignación</DialogTitle>
             <DialogDescription>
               Ingresa los detalles de la nueva asignación de equipo aquí.
             </DialogDescription>

@@ -1,24 +1,23 @@
 "use server";
 
 import { currentRole, currentUser } from "@/lib/auth-user";
+import { RepairRequestEmail } from "@/lib/brevo";
 import { db } from "@/lib/db";
 import { RequestSchema } from "@/schemas/request";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export async function createRequest(values: z.infer<typeof RequestSchema>) {
-  const loggedUser = await currentUser();
-  const result = RequestSchema.safeParse(values);
-
-  if (!loggedUser) {
-    return { error: "Acción no permitida." };
-  }
-
-  if (result.error) {
-    return { error: "Valores inválidos." };
-  }
-
   try {
+    const loggedUser = await currentUser();
+    const result = RequestSchema.safeParse(values);
+    if (!loggedUser) {
+      return { error: "Acción no permitida." };
+    }
+
+    if (result.error) {
+      return { error: "Valores inválidos." };
+    }
     const { description, reason, requestType } = result.data;
 
     await db.request.create({
@@ -34,9 +33,24 @@ export async function createRequest(values: z.infer<typeof RequestSchema>) {
       },
     });
 
+    const users = await db.user.findMany({
+      where: {
+        role: "ADMIN",
+      },
+    });
+
+
+    if (requestType === "Reparación" && users.length > 0) {
+      users.map(
+        async (user) =>
+          await RepairRequestEmail(user.email!, loggedUser.name!, description)
+      );
+    }
+
     revalidatePath("/request-center");
     return { success: "Solicitud enviada." };
   } catch (error) {
+    console.log(error);
     return { error: "Algo salió mal en el proceso." };
   }
 }

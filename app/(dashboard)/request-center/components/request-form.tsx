@@ -70,6 +70,7 @@ export function RequestForm({ initialData, closeModal }: RequestFormProps) {
         const { error, success } = await createRequest(values);
 
         if (error) {
+          console.log(error);
           toast.error("Algo salió mal", {
             description: error,
           });
