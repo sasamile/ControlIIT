@@ -11,7 +11,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { RequestColum } from "./user-columns";
+import { UserRequestColum } from "./user-columns";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,7 +26,7 @@ import { RequestForm } from "./request-form";
 import { deleteRequest } from "@/actions/requests";
 
 interface CellActionProps {
-  requestData: RequestColum;
+  requestData: UserRequestColum;
 }
 
 export function CellAction({ requestData }: CellActionProps) {
